@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 
-namespace YNABTransactionsNotifier
+namespace YnabTransactionsNotifier
 {
     public class Program
     {
@@ -14,8 +14,8 @@ namespace YNABTransactionsNotifier
                 .ConfigureFunctionsWorkerDefaults()
                 .ConfigureServices(s =>
                 {
-                    s.AddSingleton<YNABService>();
-                    s.AddHttpClient<YNABService>();
+                    s.AddSingleton<YnabService>();
+                    s.AddHttpClient<YnabService>();
                 })
                 .Build();
 

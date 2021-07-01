@@ -3,26 +3,34 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace YNABTransactionsNotifier
+namespace YnabTransactionsNotifier
 {
-    public class Function1
+    public class AvailableTransactionsNotifier
     {
-        private readonly YNABService _ynabService;
+        private const int Threshold = 5;
 
-        public Function1(YNABService ynabService)
+        private readonly YnabService _ynabService;
+
+        public AvailableTransactionsNotifier(YnabService ynabService)
         {
             _ynabService = ynabService;
         }
 
-        [Function("Function1")]
+        [Function("AvailableTransactionsNotifier")]
         public async Task Run([TimerTrigger("0 * * * * *")] MyInfo myTimer, FunctionContext context)
         {
-            var logger = context.GetLogger("Function1");
+            var logger = context.GetLogger("AvailableTransactionsNotifier");
             logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
             logger.LogInformation($"Next timer schedule at: {myTimer?.ScheduleStatus.Next}");
-            var budgets = await _ynabService.GetBudgets();
-            logger.LogInformation(budgets);
+            logger.LogInformation("Importing transactions");
+            var transactions = await _ynabService.ImportTransactions();
+            logger.LogInformation($"Imported {transactions.Count} transactions");
+            logger.LogTrace($"Transactions ids imported: {string.Join(',', transactions)}");
 
+            if (transactions.Count >= Threshold)
+            {
+                logger.LogInformation("Send Message via SMS");
+            }
         }
     }
 
