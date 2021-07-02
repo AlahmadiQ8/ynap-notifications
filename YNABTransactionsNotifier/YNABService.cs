@@ -45,7 +45,7 @@ namespace YnabTransactionsNotifier
         public async Task<IList<string>> ImportTransactions()
         {
             var endpoint = $"/v1/budgets/{BudgetId}/transactions/import";
-            var result = await _httpClient.GetAsync(endpoint);
+            var result = await _httpClient.PostAsync(endpoint, new StringContent(string.Empty));
             if (!result.IsSuccessStatusCode)
             {
                 _logger.LogError($"{result.RequestMessage?.RequestUri?.OriginalString} failed with status code {result.StatusCode}");
