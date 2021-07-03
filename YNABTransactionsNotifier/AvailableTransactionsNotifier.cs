@@ -20,7 +20,7 @@ namespace YnabTransactionsNotifier
         }
 
         [Function("AvailableTransactionsNotifier")]
-        public async Task Run([TimerTrigger("0 * * * * *")] MyInfo myTimer, FunctionContext context)
+        public async Task Run([TimerTrigger("0 0 * * * *	")] MyInfo myTimer, FunctionContext context)
         {
             var logger = context.GetLogger("AvailableTransactionsNotifier");
             logger.LogInformation($"Current running environment: {_environment.EnvironmentName}");
