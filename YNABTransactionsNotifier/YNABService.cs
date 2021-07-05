@@ -15,7 +15,6 @@ namespace YnabTransactionsNotifier
     {
         private readonly string _budgetId;
 
-        private readonly IConfiguration _configuration;
         private readonly HttpClient _httpClient;
         private readonly ILogger<YnabService> _logger;
 
@@ -23,7 +22,6 @@ namespace YnabTransactionsNotifier
         {
             _logger = logger;
             _budgetId = configuration["YNABBudgetId"];
-            _configuration = configuration;
 
             string accessToken = configuration["YNABAccessToken"];
             httpClient.BaseAddress = new Uri("https://api.youneedabudget.com");
