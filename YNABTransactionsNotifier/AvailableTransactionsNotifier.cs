@@ -1,14 +1,17 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Twilio.Rest.Api.V2010.Account;
+using Twilio.Types;
 
 namespace YnabTransactionsNotifier
 {
     public class AvailableTransactionsNotifier
     {
-        private const int Threshold = 5;
+        private const int Threshold = 0;
 
         private readonly IHostEnvironment _environment;
         private readonly YnabService _ynabService;
@@ -20,27 +23,34 @@ namespace YnabTransactionsNotifier
         }
 
         [Function("AvailableTransactionsNotifier")]
-        public async Task Run([TimerTrigger("0 0 * * * *")] MyInfo myTimer, FunctionContext context)
+        [return: TwilioSms(AccountSidSetting = "TwilioAccountSid", AuthTokenSetting = "TwilioAuthToken", From = "+18139061616")]
+        public async Task<CreateMessageOptions> Run([TimerTrigger("0 0 * * * *")] MyInfo myTimer, FunctionContext context)
         {
+
             var logger = context.GetLogger("AvailableTransactionsNotifier");
             logger.LogInformation($"Current running environment: {_environment.EnvironmentName}");
             logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
-            logger.LogInformation($"Next timer schedule at: {myTimer?.ScheduleStatus.Next}");
+            logger.LogInformation($"Next timer schedule at: {myTimer?.ScheduleStatus?.Next}");
             logger.LogInformation("Importing transactions");
             var transactions = await _ynabService.ImportTransactions();
             logger.LogInformation($"Imported {transactions.Count} transactions");
             logger.LogTrace($"Transactions ids imported: {string.Join(',', transactions)}");
 
-            if (transactions.Count >= Threshold)
+            var message = new CreateMessageOptions(new PhoneNumber("+15419086876"));
+
+            if (transactions.Count > Threshold)
             {
                 logger.LogInformation("Send Message via SMS");
             }
+
+            message.Body = $"Imported {transactions.Count} transactions";
+            return message;
         }
     }
 
     public class MyInfo
     {
-        public MyScheduleStatus ScheduleStatus { get; set; }
+        public MyScheduleStatus? ScheduleStatus { get; set; }
 
         public bool IsPastDue { get; set; }
     }

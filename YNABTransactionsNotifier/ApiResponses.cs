@@ -9,11 +9,13 @@ namespace YnabTransactionsNotifier
 {
     public class DataResponse<T>
     {
-        [JsonPropertyName("data")] public T Data { get; set; }
+        [JsonPropertyName("data")]
+        public T? Data { get; set; }
     }
 
     public class TransactionIdsResponse
     {
-        [JsonPropertyName("transaction_ids")] public IList<string> TransactionIds { get; set; }
+        [JsonPropertyName("transaction_ids")]
+        public IList<string>? TransactionIds { get; set; }
     }
 }
